@@ -6,6 +6,7 @@ from .serializers import UserSerializer, RegisterSerializer, LoginSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
+from .permissions import HasRole
 # Create your views here.
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -26,7 +27,8 @@ class LoginView(generics.CreateAPIView):
 
 
 class DashboardView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated,HasRole]
+    required_role = 'Software engg.'
     def get(self, request):
         user = request.user
         serializer = UserSerializer(user)

@@ -1,8 +1,19 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 # Create your models here.
-# class User(models.Model):
-#     id = models.AutoField(primary_key=True)
-#     username = models.CharField(max_length=100)
-#     email = models.EmailField(unique=True)
-#     password = models.CharField(max_length=100)
+class Role(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
+class UserRole(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_roles')
+    role = models.ForeignKey(Role, on_delete=models.CASCADE, related_name='user_roles')
+
+    class Meta:
+        unique_together = ('user', 'role')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.role.name}"
