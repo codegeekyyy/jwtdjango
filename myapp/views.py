@@ -1,8 +1,11 @@
 from django.shortcuts import render
-from rest_framework import generics
-from rest_framework.permissions import AllowAny
+from rest_framework import generics, status
+from rest_framework.permissions import AllowAny,IsAuthenticated
 from django.contrib.auth.models import User 
 from .serializers import UserSerializer, RegisterSerializer, LoginSerializer
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.contrib.auth import authenticate
 # Create your views here.
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -20,3 +23,15 @@ class LoginView(generics.CreateAPIView):
         if user:
             return Response({'message': 'User logged in successfully'})
         return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class DashboardView(APIView):
+    permission_classes = (IsAuthenticated,)
+    def get(self, request):
+        user = request.user
+        serializer = UserSerializer(user)
+        return Response({
+            'message': "Welcome to the dashboard",
+            'user': serializer.data,
+        }, status=status.HTTP_200_OK)
+    
